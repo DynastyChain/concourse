@@ -21,7 +21,7 @@ resources:
     source:
       <<: *marta-api-repo
       paths:
-        - package.json
+        - api/package.json
 
 jobs:
   - name: npm-cache-marta-api
@@ -30,3 +30,26 @@ jobs:
         trigger: true
       - get: npm-repo-cache-api
       - get: ci-repo
+  - name: test-marta-api
+    plan:
+      - get: npm-repo-cache-api
+        passed: [npm-cache-marta-api]
+      - get: marta-api
+        trigger: true
+        passed: [npm-cache-marta-api]
+      - get: ci-repo
+      - task: test-marta-api
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: "4.4.2"
+          inputs:
+            - name: marta-api
+            - name: ci-repo
+            - name: npm-repo-cache-api
+              path: /cache
+          run:
+            path: api-test.sh
