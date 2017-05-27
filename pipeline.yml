@@ -1,0 +1,32 @@
+resource_types:
+  - name: npm-cache
+    type: docker-image
+    source:
+      repository: ymedlop/npm-cache-resource
+      tag: latest
+
+resources:
+  - name: marta-api
+    type: git
+    source: &marta-api-repo
+      uri: https://github.com/DynastyChain/wheres-marta.git
+      branch: master
+  - name: ci-repo
+    type: git
+    source: &ci-repo
+      uri: https://github.com/DynastyChain/concourse.git
+      branch: master
+  - name: npm-repo-cache-api
+    type: npm-cache
+    source:
+      <<: *marta-api-repo
+      paths:
+        - package.json
+
+jobs:
+  - name: npm-cache-marta-api
+    plan:
+      - get: marta-api
+        trigger: true
+      - get: npm-repo-cache-api
+      - get: ci-repo
