@@ -52,4 +52,4 @@ jobs:
             - name: npm-repo-cache-api
               path: /cache
           run:
-            path: api-test.sh
+            path: ci-repo/api-test.sh
